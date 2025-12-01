@@ -1,9 +1,10 @@
 /* Load Inter font for the UI */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-/* Base font */
+/* Base font and pure OLED background */
 body {
     font-family: "Inter", sans-serif;
+    background-color: #000000; /* Ensure pure black base */
 }
 
 /* Custom styles for preview text to handle variable sizes */
@@ -14,6 +15,27 @@ body {
     overflow-wrap: break-word;
     /* No font-family set so it uses browser default for maximum Unicode support */
 }
+
+/* Styles for the Card Body (To replace Tailwind card classes with CSS for style injection) */
+.font-card {
+    background: #111;
+    border: 1px solid #333;
+    transition: all 0.2s ease;
+}
+.font-card:hover {
+    border-color: #06b6d4; /* Neon cyan hover effect */
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+}
+
+/* New: Magenta Copy Button Accent */
+.copy-btn-accent {
+    background-color: #ec4899; /* Bright Magenta */
+    transition: background-color 0.2s;
+}
+.copy-btn-accent:hover {
+    background-color: #db2777; /* Darker Magenta on hover */
+}
+
 
 /* Responsive font size */
 @media (max-width: 640px) {
