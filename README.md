@@ -4,11 +4,12 @@
 
 A lightweight, modular web application that instantly converts normal text into stylish Unicode fonts (Bold, Script, Fraktur, etc.). Perfect for social media bios and posts.
 
-**[🔗 Open the Web App](https://raw-json.github.io/Stylish-Words/)**
+**[🔗 Open the Web App](https://jayancobk.github.io/Stylish-Words/)**
 
 ---
 
 ## 🚀 Features
+* **PWA Ready & Offline Mode:** The app can now be installed to your home screen and works instantly, even without an internet connection.
 * **12+ Styles:** Includes Bold, Italic, Script, Fraktur, Monospace, Double-Struck, and more.
 * **Instant Preview:** Real-time conversion as you type.
 * **One-Click Copy:** Tap any card to copy the style to your clipboard.
