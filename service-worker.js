@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stylish-words-v1-3-cache'; // BUMPED TO 1.3
+const CACHE_NAME = '0FluffStyle-v1-3-cache'; // BUMPED TO 1.3
 
 // List all core files to be cached for offline use
 const urlsToCache = [
