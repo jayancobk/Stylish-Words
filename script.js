@@ -3,7 +3,11 @@
 // --- CORE FUNCTIONS ---
 
 function convertText(text, map) {
-    return text.split('').map(char => map[char] || char).join('');
+    // Architectural Enhancement: Check if we are using the squared map.
+    // If so, force uppercase on the input text to match the uppercase-only Unicode block.
+    const inputText = (map === charMaps.squared) ? text.toUpperCase() : text;
+    
+    return inputText.split('').map(char => map[char] || char).join('');
 }
 
 const styleMapsForMixed = [
@@ -27,8 +31,10 @@ const fonts = [
     { name: 'Bold Italic', converter: (text) => convertText(text, charMaps.serifBoldItalic) },
     { name: 'Script', converter: (text) => convertText(text, charMaps.script) },
     { name: 'Fraktur', converter: (text) => convertText(text, charMaps.fraktur) },
+    // --- NEW STYLES ADDED HERE ---
     { name: 'Bubble', converter: (text) => convertText(text, charMaps.bubble) },
     { name: 'Tiny Text (Superscript)', converter: (text) => convertText(text, charMaps.tiny) },
+    // -----------------------------
     { name: 'Monospace', converter: (text) => convertText(text, charMaps.monospace) },
     { name: 'Double-Struck', converter: (text) => convertText(text, charMaps.doubleStruck) },
     { name: 'Circled', converter: (text) => convertText(text, charMaps.circled) },
