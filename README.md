@@ -1,6 +1,6 @@
 # 0FluffStyle ✨
 
-**Type something. Make it stylish.**  
+> **Type something. Make it stylish.**  
 A fast, lightweight web app that turns plain text into clean Unicode styles for bios, socials, and posts.
 
 **[🔗 Open StylishWords](https://raw-json.github.io/Stylish-Words/)**
