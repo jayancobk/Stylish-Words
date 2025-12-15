@@ -2,8 +2,16 @@
 
 // --- CORE FUNCTIONS ---
 
+// Architectural Enhancement: Input Sanitization
+// Strips Zero Width Joiners (ZWJ) and other invisible control characters
+// to ensure predictable mapping and clean outputs.
+function sanitizeInput(text) {
+    // Regex matches ZWJ (\u200D), BOM (\uFEFF), and other invisible separators
+    return text.replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+
 function convertText(text, map) {
-    // Architectural Enhancement: Check if we are using the squared map.
+    // Check if we are using the squared map.
     // If so, force uppercase on the input text to match the uppercase-only Unicode block.
     const inputText = (map === charMaps.squared) ? text.toUpperCase() : text;
     
@@ -31,10 +39,8 @@ const fonts = [
     { name: 'Bold Italic', converter: (text) => convertText(text, charMaps.serifBoldItalic) },
     { name: 'Script', converter: (text) => convertText(text, charMaps.script) },
     { name: 'Fraktur', converter: (text) => convertText(text, charMaps.fraktur) },
-    // --- NEW STYLES ADDED HERE ---
     { name: 'Bubble', converter: (text) => convertText(text, charMaps.bubble) },
     { name: 'Tiny Text (Superscript)', converter: (text) => convertText(text, charMaps.tiny) },
-    // -----------------------------
     { name: 'Monospace', converter: (text) => convertText(text, charMaps.monospace) },
     { name: 'Double-Struck', converter: (text) => convertText(text, charMaps.doubleStruck) },
     { name: 'Circled', converter: (text) => convertText(text, charMaps.circled) },
@@ -59,11 +65,11 @@ const shareSVG = `
 
 document.addEventListener('DOMContentLoaded', () => {
     const textInput = document.getElementById('textInput');
-    const fontGrid = document.getElementById('fontGrid');
+    const clearBtn = document.getElementById('clearBtn');
     
     // Set stylized title
     const titleEl = document.getElementById('appTitle');
-    titleEl.innerText = convertText("0FluffStyle.", charMaps.serifBold); // Using Bold (Serif) for consistent style
+    titleEl.innerText = convertText("0FluffStyle.", charMaps.serifBold); 
     
     // Set GitHub Button
     const githubBtn = document.getElementById('githubButton');
@@ -74,15 +80,65 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initial Render
     updateFontDisplay();
+    updateCharCounter();
     
     // Listeners
-    textInput.addEventListener('input', updateFontDisplay);
+    textInput.addEventListener('input', () => {
+        updateFontDisplay();
+        toggleClearButton();
+        updateCharCounter();
+    });
+
+    // Clear Button Logic
+    clearBtn.addEventListener('click', () => {
+        textInput.value = '';
+        textInput.focus();
+        updateFontDisplay();
+        toggleClearButton();
+        updateCharCounter();
+    });
 });
+
+function toggleClearButton() {
+    const textInput = document.getElementById('textInput');
+    const clearBtn = document.getElementById('clearBtn');
+    if (textInput.value.length > 0) {
+        clearBtn.classList.remove('hidden');
+    } else {
+        clearBtn.classList.add('hidden');
+    }
+}
+
+function updateCharCounter() {
+    const textInput = document.getElementById('textInput');
+    const counterEl = document.getElementById('charCounter');
+    const currentLength = textInput.value.length;
+    const limit = 280;
+
+    counterEl.innerText = `${currentLength} / ${limit}`;
+
+    // Visual feedback for limits
+    if (currentLength >= limit) {
+        counterEl.classList.remove('text-gray-400', 'text-yellow-500');
+        counterEl.classList.add('text-red-500');
+    } else if (currentLength >= limit * 0.9) {
+        counterEl.classList.remove('text-gray-400', 'text-red-500');
+        counterEl.classList.add('text-yellow-500');
+    } else {
+        counterEl.classList.remove('text-red-500', 'text-yellow-500');
+        counterEl.classList.add('text-gray-400');
+    }
+}
 
 function updateFontDisplay() {
     const textInput = document.getElementById('textInput');
     const fontGrid = document.getElementById('fontGrid');
-    const text = textInput.value === '' ? 'Sample Text' : textInput.value;
+    
+    // Architectural Enhancement: Apply sanitization before processing
+    let rawText = textInput.value;
+    const sanitizedText = sanitizeInput(rawText);
+    
+    const text = sanitizedText === '' ? 'Sample Text' : sanitizedText;
     
     fontGrid.innerHTML = '';
 
@@ -100,7 +156,7 @@ function updateFontDisplay() {
         fontName.className = 'block text-sm text-gray-400 mt-4';
         fontName.innerText = font.name;
         
-        // COPY BUTTON (Remains as a small circle for one-click copy)
+        // COPY BUTTON
         const copyButton = document.createElement('button');
         copyButton.className = 'absolute top-4 right-4 bg-blue-600 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400';
         copyButton.innerHTML = `
@@ -109,11 +165,11 @@ function updateFontDisplay() {
             </svg>
         `;
         copyButton.onclick = (e) => {
-            e.stopPropagation(); // Prevent card tap
+            e.stopPropagation(); 
             copyToClipboard(convertedText);
         };
         
-        // SHARE BUTTON (Fix: Changed from bottom-4 left-4 to top-16 right-4)
+        // SHARE BUTTON
         const shareButton = document.createElement('button');
         shareButton.className = 'absolute top-16 right-4 bg-gray-700 text-gray-300 p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500';
         shareButton.innerHTML = shareSVG;
@@ -123,7 +179,6 @@ function updateFontDisplay() {
             shareText(convertedText);
         };
         
-        // Card click now defaults to copy to be user-friendly, since share button is present
         card.onclick = () => copyToClipboard(convertedText);
 
         card.appendChild(textPreview);
@@ -177,7 +232,7 @@ function shareText(text) {
     }
 }
 
-// Expose the global functions needed in the HTML
+// Expose global functions
 window.copyToClipboard = copyToClipboard;
 window.shareText = shareText;
 window.updateFontDisplay = updateFontDisplay;
